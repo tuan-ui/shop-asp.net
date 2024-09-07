@@ -1,0 +1,37 @@
+﻿
+@model List<Web.Models.CommentViewModel>
+@{
+   
+    
+}
+@foreach (var itemcomment in Model)
+{
+    <div class="row">
+        <!-- Review item START -->
+        <div class="d-md-flex my-4">
+            <div class="me-4 flex-shrink-0 col-md-3"></div>
+            <!-- Text -->
+            <div class="col-md-12">
+                <div class="d-sm-flex mt-1 mt-md-0 align-items-center">
+                    <h5 class="me-3 mb-0">@itemcomment.User.FullName&nbsp;</h5>
+                    @{
+                        if (@ViewBag.isAdmin == true)
+                        {
+                            <div class="mt-2 text-right ml-3">
+                                <a class="deletecomment" data-id="@itemcomment.ID" data-productid="@ViewBag.productId" >
+                                    <input type="submit" class="btn btn-danger mb-0" value="X" />
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+                <!-- Info -->
+                <p class="small mb-2">@itemcomment.CommentDate</p>
+                <div class="mt-2">
+                    <p class="">@itemcomment.CommentMsg</p>     
+                </div>    
+             </div>
+        </div>
+    </div>
+
+}

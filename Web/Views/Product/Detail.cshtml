@@ -1,0 +1,258 @@
+﻿@model Web.Models.ProductViewModel
+
+@{
+    ViewBag.Title = Model.Name;
+    ViewBag.MetaKeyword = Model.MetaKeyword;
+    ViewBag.MetaDescription = Model.MetaDescription;
+    Layout = "~/Views/Shared/Layout.cshtml";
+    var listcomment = (List<Web.Models.CommentViewModel>)ViewBag.ListComment;
+    var category = (Data.Models.ProductCategory)ViewBag.category;
+    var moreImages = (List<string>)ViewBag.MoreImages;
+    var tags = ViewBag.Tags as IEnumerable<Web.Models.TagViewModel>;
+    Func<decimal?, string> formatMoney = (amount) =>
+    {
+        if (amount.HasValue)
+        {
+            return amount.Value.ToString("#,##0.00");
+        }
+        else
+        {
+            return "0.00";
+        }
+    };
+}
+<script src="~/Assets/admin/libs/toastr/toastr.min.js"></script>
+@section homeProducts
+{
+    <script src="~/Assets/client/js/vendor/jquery-2.2.4.min.js"></script>
+    <script src="~/Assets/admin/libs/jqueri-ui/jquery-ui.min.js"></script>
+    <script src="~/Assets/admin/libs/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/Assets/admin/libs/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/Assets/client/js/comment.js"></script>
+    <script src="~/Assets/admin/libs/ion-rangeSlider/js/ion.rangeSlider.min.js"></script>
+}
+<div class="">
+    <div class="container">
+        <div class="row s_product_inner">
+            <div class="col-lg-6 product_image_area">
+                <div class="s_Product_carousel">
+
+                    @if (moreImages != null && moreImages.Count > 0)
+                    {
+                        foreach (var image in moreImages)
+                        {
+                            <div class="single-prd-item">
+                                <img class="img-fluid" src="@image" alt="">
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1">
+                <div class="s_product_text">
+                    <h3>@Model.Name</h3>
+                    <h2>@formatMoney(Model.Price)</h2>
+                    <ul class="list">
+                        <li><a class="active" href="#"><span>Category</span> : @category.Name</a></li>
+                        <li><a href=""><span>Availibility</span> : @(Model.Quantity == 0 ? "Hết hàng" : "Còn hàng")</a></li>
+                        @if (Model.CategoryID == 18)
+                        {
+                        <li>
+                            @Html.Raw(@Model.Description)
+                        </li>
+                        }
+                        else
+                        {
+                        <li>
+                            <a href=""><span>Tags</span></a>:
+                            @if (tags != null)
+                            {
+                                foreach (var tag in tags)
+                                {
+                                    if (tag != null) { 
+                                        <a href="/tag/@(tag.ID).html">@(tag.Name), </a>
+                                    }
+                                }
+                            }
+                        </li>
+                        }
+
+                    </ul>
+
+                    <div class=" d-flex align-items-center">
+                        <a class="primary-btn btnAddToCart" href="#" data-id="@Model.ID">Thêm vào giỏ hàng</a>
+                        <a class="primary-btn" href="~/lien-he.html">Liên hệ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content START -->
+    <h5 class="mb-4">Tất cả đánh giá</h5>
+    <div class="row mb-4">
+
+
+        <!-- Rating info -->
+        <div class="col-md-4 mt-4 ">
+            <div class="text-center">
+                <!-- Info -->
+                <h2 class="mb-0">@ViewBag.rateavg</h2>
+                <!-- Star -->
+                <ul class="list-inline mb-0">
+                    @{
+                        float numFloat = (float)(Math.Round(@ViewBag.rateavg * 2) / 2);
+                        int numInt = (int)numFloat;
+                        bool flagHalf = false;
+                        int starleft = 0;
+                        for (int i = 0; i < numInt; i++)
+                        {
+                            <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+                        }
+                        if (numFloat != (float)numInt)
+                        {
+                            flagHalf = true;
+                            <li class="list-inline-item me-0"><i class="fa fa-star-half-o text-warning"></i></li>
+                        }
+                        if (flagHalf == false)
+                        {
+                            starleft = 5 - numInt;
+                        }
+                        else
+                        {
+                            starleft = 5 - numInt - 1;
+                        }
+                        for (int i = 0; i < starleft; i++)
+                        {
+                            <li class="list-inline-item me-0"><i class="fa fa-star-o text-warning"></i></li>
+                        }
+
+                    }
+
+                </ul>
+                <h4 class="mb-0">(@ViewBag.ratecount)</h4>
+            </div>
+
+        </div>
+
+        <!-- Progress-bar and star -->
+        <div class="col-md-8">
+            <div class="row">
+                <!-- Progress bar and Rating -->
+
+                <div class="col-6 col-sm-6">
+                    <!-- Star item -->
+                    <ul class="list-inline mb-0 pull-right">
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <h4 class="">@ViewBag.rate5</h4>
+                </div>
+
+                <!-- Progress bar and Rating -->
+
+
+                <div class="col-6 col-sm-6 ">
+                    <!-- Star item -->
+                    <ul class="list-inline mb-0 pull-right">
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <h4 class="">@ViewBag.rate4</h4>
+                </div>
+                <!-- Progress bar and Rating -->
+
+
+                <div class="col-6 col-sm-6">
+                    <!-- Star item -->
+                    <ul class="list-inline mb-0 pull-right">
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <h4 class="">@ViewBag.rate3</h4>
+                </div>
+                <!-- Progress bar and Rating -->
+
+
+                <div class="col-6 col-sm-6">
+                    <!-- Star item -->
+                    <ul class="list-inline mb-0 pull-right">
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <h4 class="">@ViewBag.rate2</h4>
+                </div>
+                <!-- Progress bar and Rating -->
+                <div class="col-6 col-sm-6">
+                    <!-- Star item -->
+                    <ul class="list-inline mb-0 pull-right">
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                        <li class="list-inline-item me-0 small"><i class="fa fa-star-o text-warning"></i></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-sm-6">
+                    <h4 class="">@ViewBag.rate1</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Review END -->
+    <!-- Student review START -->
+    <div id="div_allcomment">
+        @{Html.RenderAction("_Comment", "Product", new { producId = @Model.ID }); }
+
+    </div>
+
+    <!-- Student review END -->
+    <!-- Leave Review START -->
+    <div class="mt-2">
+        <h5 class="mb-4">Gửi ý kiến bình luận tại đây</h5>
+        <form class="row g-3">
+
+            <div class="col-12">
+                <select id="ddlRate" class="form-select  js-choice">
+                    <option value="5" selected="">★★★★★ (5/5)</option>
+                    <option value="4">★★★★☆ (4/5)</option>
+                    <option value="3">★★★☆☆ (3/5)</option>
+                    <option value="2">★★☆☆☆ (2/5)</option>
+                    <option value="1">★☆☆☆☆ (1/5)</option>
+                </select>
+            </div>
+            <div class="col-12 mt-4">
+                <textarea class="form-control" id="txtCommentNew" placeholder="Viết nhận xét tại đây" rows="3"></textarea>
+            </div>
+            <div class="col-12 mt-4">
+                <button type="button" id="btnCommentNew" data-productid="@Model.ID" data-userid="@ViewBag.UserID" class="btn btn-primary mb-0">Bình luận</button>
+            </div>
+        </form>
+
+        <!-- Leave Review END -->
+
+    </div>
+    <h5 class="mb-4">Thông số kỹ thuật</h5>
+    <div id="content">
+        @Html.Raw(Model.Content)
+    </div>
+</div>

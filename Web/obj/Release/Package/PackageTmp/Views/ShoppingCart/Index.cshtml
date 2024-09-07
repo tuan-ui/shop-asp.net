@@ -1,0 +1,131 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+    <script src="~/Assets/admin/libs/numeral/min/numeral.min.js"></script>
+    <script src="~/Assets/client/js/vendor/jquery-2.2.4.min.js"></script>
+    <script src="~/Assets/admin/libs/jqueri-ui/jquery-ui.min.js"></script>
+    <script src="~/Assets/admin/libs/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/Assets/admin/libs/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/Assets/admin/libs/mustache/mustache.js"></script>
+    <script src="~/Assets/admin/libs/toastr/toastr.min.js"></script>
+    <script src="~/Assets/client/js/shoppingCart.js"></script>
+    <script src="~/Assets/admin/libs/ion-rangeSlider/js/ion.rangeSlider.min.js"></script>
+<div class="single_top">
+    <div class="single_grid">
+        <div id="cartContent">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>STT</td>
+                        <td>Tên sản phẩm</td>
+                        <td>Hình ảnh</td>
+                        <td>Giá</td>
+                        <td>Số lượng</td>
+                        <td>Thành tiền</td>
+                        <td>#</td>
+                    </tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+            </table>
+            <button class="btn btn-success" id="btnContinue">Tiếp tục mua hàng</button>
+            <button class="btn btn-danger" id="btnDeleteAll">Xóa giỏ hàng</button>
+            <button class="btn btn" id="btnCheckout">Thanh toán</button>
+            <div class="pull-right">
+                Tổng tiền: <span id="lblTotalOrder"></span>
+            </div>
+        </div>
+        <div id="divCheckout" style="display:none;">
+            <div class="reservation_top">
+                <div class="contact_right">
+                    <h3>Thanh toán</h3>
+                    <div class="contact-form">
+                        <form method="post" id="frmPayment">
+                            <div class="row">
+                            <div class="col-6">
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <label>
+                                        <input type="checkbox" id="chkUserLoginInfo" />
+                                        Sử dụng thông tin đăng nhập
+                                    </label>
+                                }
+                                <input type="text" class="textbox form-control mt-3 " id="txtName" name="name" placeholder="Họ tên">
+                                <input type="text" class="textbox form-control mt-3" id="txtAddress" name="address" placeholder="Địa chỉ">
+                                <input type="text" class="textbox form-control mt-3" id="txtEmail" name="email" placeholder="Email">
+                                <input type="text" class="textbox form-control mt-3" id="txtPhone" name="phone" placeholder="Điện thoại">
+                                <textarea value="" id="txtMessage" class="form-control mt-3" placeholder="Message"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <div class="container mt-2">
+                                    <h4>Chọn phương thức thanh toán</h4>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="paymentMethod" id="vnpay" value="vnpay">
+                                            Thanh toán VNPay
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="paymentMethod" id="cod" value="cod" checked>
+                                            Thanh toán khi nhận hàng
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="container mt-2">
+                                    <h4>Nhập mã giảm giá (nếu có)</h4>
+                                    <div class="radio">
+                                        <input type="text" class="textbox form-control mt-3" id="txtpromotion" name="promotion" placeholder="Mã giảm giá">
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6 left">
+                                            Tạm tính: 
+                                        </div>
+                                        <div class="col-6 right">
+                                            <span id="lblTotalOrder1"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6 left">
+                                            Khuyến mãi: 
+                                        </div>
+                                        <div class="col-6 right">
+                                            <span id="lblPromo"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6 left">
+                                            Tiền tổng: 
+                                        </div>
+                                        <div class="col-6 right">
+                                            <span id="lblTotal"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input class="btn btn-success mt-3" type="button" id="btnCreateOrder" value="Thanh toán">
+                            </div>
+                             </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"> </div>
+    </div>
+
+</div>
+
+<script id="tplCart" type="x-tmpl-mustache">
+    <tr>
+        <td>{{STT}}</td>
+        <td>{{ProductName}}</td>
+        <td><img src="{{Image}}" height="50" /></td>
+        <td>{{PriceF}}</td>
+        <td><input type="number" data-id="{{ProductId}}" data-price="{{Price}}" value="{{Quantity}}" class="input txtQuantity" /></td>
+        <td id="amount_{{ProductId}}">{{Amount}}</td>
+        <td><button class="btn btn-danger btnDeleteItem" data-id="{{ProductId}}"><i class="fa fa-close"></i></button></td>
+    </tr>
+
+</script>

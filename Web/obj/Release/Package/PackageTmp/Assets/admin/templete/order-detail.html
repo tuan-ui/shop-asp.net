@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 5.87in;
+            height: 8in;
+            margin: 0 0;
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .invoice-header {
+            margin-bottom: 0px;
+            justify-content: space-between;
+        }
+
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .invoice-subtitle {
+            font-size: 16px;
+        }
+
+        .text-center {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .invoice-section {
+            margin-bottom: 20px;
+        }
+
+            .invoice-section strong {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .table th, .table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: center;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+            }
+
+        .contact-info {
+            text-align: center;
+            margin-top: 20px;
+            bottom: 20px;
+        }
+
+            .contact-info p {
+                margin: 5px 0;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="invoice-header">
+            <div>
+                <div class="invoice-title">TUAN PC</div>
+                <div class="invoice-subtitle">Xây dựng bạn đời của bạn.</div>
+            </div>
+            <div class="text-center">
+                <p>HOÁ ĐƠN</p>
+            </div>
+        </div>
+        <div class="invoice-section">
+            <div>
+                <strong>Thông tin người mua:</strong>
+                <p>Ngày mua hàng:  {{CreatedDate}}</p>
+                <p>Tên khách hàng: {{CustomerName}}</p>
+                <p>Địa chỉ:        {{CustomerAddress}}</p>
+                <p>Số điện thoại:  {{CustomerMobiphhone}}</p>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>SẢN PHẨM</th>
+                    <th>SỐ LƯỢNG</th>
+                    <th>ĐƠN GIÁ</th>
+                    <th>THÀNH TIỀN</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {{OrderDetails}}
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"><strong>TỔNG CỘNG</strong></td>
+                    <td>{{TotalPrice}} VND</td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="contact-info">
+            <p>TuanPC</p>
+            <p>160 Cao Lỗ , phường 4, Quận 8, </p>
+            <p>Ho Chi Minh City, VietNam</p>
+            <p>0366494098</p>
+            <p>lethanhtuan900@gmail.com</p>
+            <p>Từ thứ 2 đến thứ 6 , 8h30 am đến 5h30 pm</p>
+        </div>
+    </div>
+</body>
+</html>

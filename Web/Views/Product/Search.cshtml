@@ -1,0 +1,164 @@
+﻿@model Web.Infrastructure.Core.PaginationSet<Web.Models.ProductViewModel>
+
+@{
+    var keyword =(string)ViewBag.Keyword;
+    ViewBag.Title = "Kết quả tìm kiếm cho từ khóa " + keyword;
+    ViewBag.MetaKeyword = "Kết quả tìm kiếm cho từ khóa " + keyword;
+    ViewBag.MetaDescription = "Kết quả tìm kiếm cho từ khóa " + keyword;
+    Layout = "~/Views/Shared/Layout.cshtml";
+    Func<decimal?, string> formatMoney = (amount) =>
+    {
+        if (amount.HasValue)
+        {
+            return amount.Value.ToString("#,##0.00");
+        }
+        else
+        {
+            return "0.00";
+        }
+    };
+}
+<script src="~/Assets/admin/libs/toastr/toastr.min.js"></script>
+<section class="lattest-product-area pb-40 category-list">
+    @if (Model.Count > 0)
+    {
+        <!-- Start Filter Bar -->
+        <div class=" d-flex row" style="background-color: #828BB3;line-height: 50px;border-radius: 0.75rem;">
+            <div class="col-lg-6 col-md-6 col-sm-6 d-flex align-items-center">
+                <a href=""><h4 style="color:white">Kết quả tìm kiếm : @keyword - <span>@Model.TotalCount sản phẩm</span> </h4></a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 d-flex justify-content-center mb-2">
+                <div class="sorting">
+                    <select id="sortOptions" onchange="handleSortChange()" class="mb-2">
+                        <option value="" @(String.IsNullOrEmpty(ViewBag.Sort) ? "selected" : "")>Chọn phương thức sắp xếp</option>
+                        <option value="popular" @(ViewBag.Sort == "popular" ? "selected" : "")>Bán chạy</option>
+                        <option value="discount" @(ViewBag.Sort == "discount" ? "selected" : "")>Khuyến mãi</option>
+                        <option value="price" @(ViewBag.Sort == "price" ? "selected" : "")>Giá: Thấp -> Cao</option>
+                        <option value="priceDes" @(ViewBag.Sort == "priceDes" ? "selected" : "")>Giá: Cao -> Thấp</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- End Filter Bar -->
+        <!-- Start Items Holder -->
+        <div class="row">
+
+            @foreach (var product in Model.Items)
+            {
+                var url = "/" + product.Alias + ".p-" + product.ID + ".html";
+                <div class="col-lg-4 col-md-6">
+                    <div class="single-product">
+                        <a href="@url"><img src="@product.Image" /> </a>
+                        <div class="product-details">
+                            <h6>
+                                @product.Name
+                            </h6>
+                            <div class="price">
+                                <h6>@formatMoney(product.PromotionPrice)</h6>
+                                <h6 class="l-through">@formatMoney(product.Price)</h6>
+                            </div>
+                            <div class="prd-bottom">
+
+                                <a href="" class="social-info btnAddToCart" data-id="@product.ID">
+                                    <span class="ti-bag"></span>
+                                    <p class="hover-text">add to bag</p>
+                                </a>
+                                <a href="" class="social-info">
+                                    <span class="lnr lnr-heart"></span>
+                                    <p class="hover-text">Wishlist</p>
+                                </a>
+                                <a href="" class="social-info">
+                                    <span class="lnr lnr-sync"></span>
+                                    <p class="hover-text">compare</p>
+                                </a>
+                                <a href="@url" class="social-info">
+                                    <span class="lnr lnr-move"></span>
+                                    <p class="hover-text">view more</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <!-- End Items Holder -->
+        <!-- Start Filter Bar -->
+        <div class="filter-bar d-flex flex-wrap align-items-center" style="border-radius: 0.6rem;">
+            @if (Model.TotalPages >= 1)
+            {
+                // Create numeric links
+                var startPageIndex = Math.Max(1, Model.Page - Model.MaxPage / 2);
+                var endPageIndex = Math.Min(Model.TotalPages, Model.Page + Model.MaxPage / 2);
+
+                <nav>
+                    <ul class="pagination">
+                        @if (Model.Page > 1)
+                        {
+                            <li>
+                                <a href="?page=1" aria-label="First">
+                                    <i class="fa fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="?page=@(Model.Page-1)" aria-label="Previous">
+                                    <i class="fa fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = startPageIndex; i <= endPageIndex; i++)
+                        {
+                            if (Model.Page == i)
+                            {
+                                <li class="active"><a href="?page=@i" title="Trang @i">@i</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="?page=@i" title="Trang @i">@i</a></li>
+                            }
+                        }
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <li>
+                                <a href="?page=@(Model.Page+1)" aria-label="Next">
+                                    <i class="fa fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="?page=@Model.TotalPages" aria-label="Last">
+                                    <i class="fa fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+        <!-- End Filter Bar -->
+    }
+    else
+    {
+        <div class="text-center">khong co san pham nao</div>
+    }
+
+</section>
+<style>
+    a {
+        color: white;
+        text-decoration: none;
+    }
+
+        a:hover {
+            color: yellow;
+        }
+</style>
+<script type="text/javascript">
+    function handleSortChange() {
+        var sort = document.getElementById("sortOptions").value;
+        var currentUrlParams = new URLSearchParams(window.location.search);
+        currentUrlParams.set('sort', sort);
+        currentUrlParams.set('page', '@Model.Page'); 
+        window.location.search = currentUrlParams.toString();
+    }
+</script>

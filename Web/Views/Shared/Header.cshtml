@@ -1,0 +1,58 @@
+﻿﻿@using Microsoft.AspNet.Identity;
+<!-- Start Header Area -->
+<header class="header_area sticky-header">
+    <div class="main_menu">
+        <nav class="navbar navbar-expand-lg navbar-light main_box" style="border-radius: 0.75rem;">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <a class="navbar-brand logo_h" href="/" >
+                    <img src="~/UploadedFiles/files/icon.jpg" alt="Logo" width="40" height="40" style="border-radius: 0.75rem;"/>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse offset inner-div float-right col-md-8" id="navbarSupportedContent">
+                    @using (Html.BeginForm("LogOut", "Account", FormMethod.Post, new { @id = "frmLogout" }))
+                    {
+                        if (Request.IsAuthenticated)
+                        {
+                            @Html.AntiForgeryToken()
+                            <ul class="nav navbar-nav menu_nav ml-auto">
+                                <li class="nav-item"><a class="nav-link" href="/tai-khoan.html"><span>Xin chào: @User.Identity.GetUserName()</span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#" id="btnLogout">Đăng xuất</a></li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul class="nav navbar-nav menu_nav ml-auto ">
+                                <li class="nav-item "><a class="nav-link" href="/dang-nhap.html"><span>ĐĂNG NHẬP </span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="/dang-ky.html">ĐĂNG KÝ</a></li>
+                            </ul>
+                        }
+                    }
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="nav-item"><a href="/build-Pc.html" class="buildPC"><span class="fa fa-wrench"> Build PC</span></a></li>
+                        <li class="nav-item"><a href="/gio-hang.html" class="cart"><span class="ti-bag"> Giỏ hàng</span></a></li>
+                        <li class="nav-item">
+                            <button class="search"><span class="lnr lnr-magnifier" id="search"> Tìm kiếm</span></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="search_input" id="search_input_box">
+        <div class="container">
+            <form class="d-flex justify-content-between" method="get" action="/tim-kiem.html">
+                <input type="text" class="form-control" id="txtKeyword" placeholder="Search Here" name="keyword">
+                <button type="submit" class="btn" id="btnSearch"></button>
+                <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+            </form>
+        </div>
+    </div>
+</header>
+<!-- End Header Area -->

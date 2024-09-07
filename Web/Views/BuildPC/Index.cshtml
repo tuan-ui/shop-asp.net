@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/LayoutWithoutCata.cshtml";
+}
+<script src="~/Assets/admin/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/Assets/admin/libs/jquery/dist/jquery.min.js"></script>
+<script src="~/Assets/admin/libs/toastr/toastr.min.js"></script>
+<script src="~/Assets/client/js/buildpc.js"></script>
+<script src="~/Assets/client/js/vendor/jquery-2.2.4.min.js"></script>
+<script src="~/Assets/admin/libs/ion-rangeSlider/js/ion.rangeSlider.min.js"></script>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3">
+            <h4>Chọn mục đích sử dụng</h4>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="purpose" id="gaming" value="gaming" checked>
+                    Gaming
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="purpose" id="dohoa" value="dohoa">
+                    Đồ họa
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="purpose" id="vanphong" value="vanphong">
+                    Văn phòng
+                </label>
+            </div>
+        </div>
+        <div class="col-xl-9 col-lg-9 col-md-9">
+            <h4>Giá (triệu VND)</h4>
+            <input type="text" id="price_range_component" name="price_range_component" />
+            <input type="hidden" name="selectedPrice" />
+        </div>
+    </div>
+    <div class="mb-4 text-right">
+        <button type="button" class="btn btn-warning" id="Clear">Clear</button>
+        <button type="submit" class="btn btn-warning" id="ButtonBuild">BuildPC</button>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Linh Kiện</th>
+                <th>Chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Bộ vi xử lý</td>
+                <td class="labelholder7"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="7">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Bo mạch chủ</td>
+                <td class="labelholder8">
+                    <button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="8">+</button>
+                    @*<button class="btn btn-primary selectProductButtonTag" data-toggle="modal" data-target="#productModal" data-cata="8">X</button>*@
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>RAM</td>
+                <td class="labelholder17"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="17">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td>VGA</td>
+                <td class="labelholder11"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="11">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">5</th>
+                <td>Nguồn</td>
+                <td class="labelholder13"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="13">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">6</th>
+                <td>Vỏ Case</td>
+                <td class="labelholder12"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="12">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">7</th>
+                <td>Màn hình</td>
+                <td class="labelholder14"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="14">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">8</th>
+                <td>HDD</td>
+                <td class="labelholder15"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="15">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">9</th>
+                <td>SSD</td>
+                <td class="labelholder16"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="16">+</button></td>
+            </tr>
+            <tr>
+                <th scope="row">10</th>
+                <td>Quạt</td>
+                <td class="labelholder10"><button class="btn btn-primary selectProductButton" data-toggle="modal" data-target="#productModal" data-cata="10">+</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="text-right">
+        Tổng giá trị: <span class="total-price-display"></span>
+    </div>
+    <div class="text-right">
+        <button class="btn btn-success btnCheckPC">Kiểm tra thông số</button>
+        <button class="btn btn-success btnAddToCartAll">Thêm tất cả vào giỏ hàng</button>
+    </div>
+    <div class="reponseHolder">
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Chọn linh kiện</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="product-list">
+                    <ul id="productList" class="list-group"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#" id="prevPage"><</a></li>
+                        <li class="page-item"><a class="page-link" href="#" id="nextPage">></a></li>
+                    </ul>
+                </nav>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#price_range_component").ionRangeSlider({
+            type: "single",
+            grid: true,
+            min: 0,
+            max: 100,
+            from: 15,
+            step: 1
+        });
+
+    });
+</script>

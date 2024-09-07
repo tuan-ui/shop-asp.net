@@ -1,0 +1,61 @@
+﻿  <!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Doanh thu
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Trang chủ</a></li>
+        <li><a href="">Thống kê</a></li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="col-md-2">
+        <div class="form-group">
+            <label for="fromDate">From Date:</label>
+            <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="fromDate" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group">
+            <label for="toDate">To Date:</label>
+            <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="toDate" is-open="popup2.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <label>Thay đổi ngày</label>
+        <p class="input-group">
+            <button class="btn btn-default justify-content-center" ng-click="changeDate()">Lọc</button>
+        </p>
+    </div>
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-lg-8">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                    <li class="active"><a href="#revenue-chart" data-toggle="tab">Doanh thu</a></li>
+                </ul>
+                <div class="tab-content no-padding">
+                    <!-- Morris chart - Sales -->
+                    <canvas id="bar" class="chart chart-line"
+                            chart-data="chartdata" chart-labels="labels" chart-series="series"></canvas>
+                </div>
+            </div><!-- /.nav-tabs-custom -->
+
+        </section><!-- /.Left col -->
+    </div><!-- /.row (main row) -->
+
+</section><!-- /.content -->

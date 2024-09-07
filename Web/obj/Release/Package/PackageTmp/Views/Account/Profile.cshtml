@@ -1,0 +1,231 @@
+﻿@model Web.Models.ApplicationUserViewModel
+@{
+    ViewBag.Title = "Profile";
+}
+<link rel="stylesheet" href="~/Assets/client/css/linearicons.css">
+<link rel="stylesheet" href="~/Assets/client/css/owl.carousel.css">
+<link rel="stylesheet" href="~/Assets/client/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/Assets/client/css/themify-icons.css">
+<link rel="stylesheet" href="~/Assets/client/css/nice-select.css">
+<link rel="stylesheet" href="~/Assets/client/css/nouislider.min.css">
+<link rel="stylesheet" href="~/Assets/client/css/bootstrap.css">
+<link rel="stylesheet" href="~/Assets/client/css/main.css">
+<link href="~/Assets/admin/libs/aos/aos.css" rel="stylesheet" />
+<link href="~/Assets/admin/libs/plyr/plyr.css" rel="stylesheet" />
+<link href="~/Assets/admin/libs/choices/css/choices.min.css" rel="stylesheet" />
+<link href="~/Assets/admin/libs/jqueri-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
+
+<!-- Slider -->
+@{Html.RenderAction("Header", "Home");}
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>Tuan pc</h1>
+
+            </div>
+        </div>
+    </div>
+</section>
+@{
+    if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    else if (TempData["ErrorMessage"] != null)
+    {
+        <div class="text-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+}
+<div class="container news_section_container">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("Profile", "Account", FormMethod.Post))
+            {
+                @Html.ValidationSummary(false)
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="FullName">Full Name</label>
+                    <input type="text" class="form-control" aria-describedby="fullNameHelp" name="FullName" value="@Model.FullName">
+                </div>
+                <div class="form-group">
+                    <label for="Phone">Phone</label>
+                    <input type="text" class="form-control" aria-describedby="phoneHelp" name="PhoneNumber" value="@Model.PhoneNumber">
+                </div>
+                <div class="form-group">
+                    <label for="BirthDay">Ngày sinh</label>
+                    <input type="date" class="form-control" aria-describedby="birthDayHelp" name="BirthDay" value="@Model.BirthDay.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="Email" value="@Model.Email" readonly>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Cập nhật</button>
+                </div>
+
+            }
+        </div>
+
+        <div class="col-md-12 text-center">
+            <button class="btn btn-primary mb-3" id="fetchDataBtn">Hiện thị danh sách order</button>
+        </div>
+        <div class="col-md-12 text-center">
+            <a href="/Account/ChangePassword" class="btn btn-primary mb-3">Thay đổi mật khẩu</a>
+        </div>
+        <div class="container">
+            <div id="table" class="panel panel-default"></div>
+            <div id="paginationControls" class="mb-2"></div>
+            <div id="tableDetail" class="panel panel-default"></div>
+        </div>
+    </div>
+    </div>
+        @{ Html.RenderAction("Footer", "Home");}
+        <script src="~/Assets/client/js/vendor/jquery-2.2.4.min.js"></script>
+        <script src="~/Assets/admin/libs/jqueri-ui/jquery-ui.min.js"></script>
+        <script src="~/Assets/admin/libs/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/Assets/admin/libs/jquery-validation/dist/additional-methods.min.js"></script>
+        <script src="~/Assets/admin/libs/mustache/mustache.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+                crossorigin="anonymous"></script>
+        <script src="~/Assets/client/js/vendor/bootstrap.min.js"></script>
+        <script src="~/Assets/client/js/jquery.ajaxchimp.min.js"></script>
+        <script src="~/Assets/client/js/jquery.nice-select.min.js"></script>
+        <script src="~/Assets/client/js/jquery.sticky.js"></script>
+        <script src="~/Assets/client/js/nouislider.min.js"></script>
+        <script src="~/Assets/client/js/jquery.magnific-popup.min.js"></script>
+        <script src="~/Assets/client/js/owl.carousel.min.js"></script>
+        <script src="~/Assets/client/js/common.js"></script>
+        <script src="~/Assets/admin/libs/numeral/numeral.js"></script>
+        @*<script src="~/Assets/client/js/shoppingCart.js"></script>*@
+
+        <script src="~/Assets/client/js/main.js"></script>
+        <script>
+    $(document).ready(function () {
+        const itemsPerPage = 10;
+        let currentPage = 1; 
+        let totalPages = 1; 
+
+        $('#fetchDataBtn').click(function() {
+            fetchData(currentPage);
+        });
+        function formatMoney(amount) {
+            return amount.toFixed(2)
+                .replace('.', ',') 
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
+        }
+        function fetchData(page) {
+            $.ajax({
+                url: '/api/order/getbyusername?username=@Model.UserName&page=' + page + '&itemsPerPage=' + itemsPerPage,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#table').empty();
+                    var table = $('<table class="table table-bordered"></table>');
+                    var headerRow = $('<tr><th>Mã hóa đơn</th><th>Ngày tạo</th><th>Phương thức thanh toán</th><th>Trạng thái thanh toán</th><th>Đơn giá</th><th>Chi tiết</th></tr>');
+                    table.append(headerRow);
+                    $.each(data.items, function(index, item) {
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + item.ID + '</td>');
+                        row.append('<td>' + item.CreatedDate + '</td>');
+                        row.append('<td>' + item.PaymentMethod + '</td>');
+                        row.append('<td>' + item.PaymentStatus + '</td>');
+                        row.append('<td>' + formatMoney(item.TotalPrice) + '</td>');
+                        row.append('<td><button type="button" class="btn btn-primary detailButton" data-id="' + item.ID + '">Chi tiết</button></td>');
+                        table.append(row);
+                    });
+
+                    $('#table').append(table);
+                    $('.detailButton').click(function() {
+                        var invoiceId = $(this).data('id');
+                        fetchInvoiceDetails(invoiceId);
+                    });
+
+                    totalPages = data.totalPages;
+                    updatePaginationControls();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        function updatePaginationControls() {
+            $('#paginationControls').empty();
+            var ul = $('<ul class="pagination"></ul>');
+
+            for (let i = 1; i <= totalPages; i++) {
+                let li = $('<li></li>');
+                let pageButton = $('<a href="#">' + i + '</a>');
+                if (i === currentPage) {
+                    li.addClass('active');
+                }
+                pageButton.click(function (e) {
+                    e.preventDefault();
+                    currentPage = i;
+                    fetchData(currentPage);
+                });
+                li.append(pageButton);
+                ul.append(li);
+            }
+
+            $('#paginationControls').append(ul);
+        }
+        function fetchInvoiceDetails(id) {
+            $.ajax({
+                url: '/api/order/details?id=' + id,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#tableDetail').empty();
+
+                    var detailTable = $('<table id="invoiceDetails" class="table table-bordered"></table>');
+                    var headerRow1 = $('<tr><th>Tên hàng hóa</th><th>Hạn bảo hành</th><th>Số lượng</th><th>Giá</th><th>Thành tiền</th></tr>');
+                    detailTable.append(headerRow1);
+                    var tongTien = 0;
+                    $.each(data, function (index, item) {
+                        tongTien += item.Quantity * item.Price;
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + item.ProductName + '</td>');
+                        row.append('<td>' + formatDate(item.ExpiredDate) + '</td>');
+                        row.append('<td>' + item.Quantity + '</td>');
+                        row.append('<td>' + formatMoney(item.Price) + '</td>');
+                        row.append('<td>' + formatMoney(item.Quantity * item.Price) + '</td>');
+                        detailTable.append(row);
+                    });
+
+                    var rowEnd = $('<tr></tr>');
+                    rowEnd.append('<td>' + '</td>');
+                    rowEnd.append('<td>' + '</td>');
+                    rowEnd.append('<td>' + 'Tổng tiền' + '</td>');
+                    rowEnd.append('<td>' + formatMoney(tongTien) + '</td>');
+                    detailTable.append(rowEnd);
+
+
+                    $('#tableDetail').append(detailTable);
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+        var $form = $('#frmLogout');
+        $form.css({
+            'margin-block-end': '0em'
+        });
+
+    });
+    </script>

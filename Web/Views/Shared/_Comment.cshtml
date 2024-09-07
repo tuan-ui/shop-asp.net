@@ -1,0 +1,106 @@
+﻿@model IEnumerable<Web.Models.CommentViewModel>
+@{
+
+    <script src="~/Assets/client/js/comment.js"></script>
+}
+@foreach (var itemcomment in Model)
+{
+    if (itemcomment.ParentID == 0)
+    {
+        <div class="col-xl-9 col-lg-8 col-md-7">
+            <!-- Review item START -->
+            <div class="my-4">
+                <!-- Text -->
+                <div class="col-md-24">
+                    <div class="d-sm-flex mt-1 mt-md-0 align-items-center">
+                        <h5 class="me-3 mb-0">@itemcomment.User.FullName &nbsp;</h5>
+                        <!-- Review star -->
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+                            @if (itemcomment.Rate >= 2)
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+
+                            }
+                            else
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star-o text-warning"></i></li>
+                            }
+                            @if (itemcomment.Rate >= 3)
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+
+                            }
+                            else
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star-o text-warning"></i></li>
+                            }
+                            @if (itemcomment.Rate >= 4)
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+
+                            }
+                            else
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star-o text-warning"></i></li>
+                            }
+                            @if (itemcomment.Rate >= 5)
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star text-warning"></i></li>
+
+                            }
+                            else
+                            {
+                                <li class="list-inline-item me-0"><i class="fa fa-star-o text-warning"></i></li>
+                            }
+
+                        </ul>
+                        @{
+                            if (@ViewBag.isAdmin==true) { 
+                                <div class="mt-2 text-right ml-3">
+                                    <a class="deletecomment" data-id="@itemcomment.ID" data-productid="@ViewBag.productId">
+                                        <input type="submit" class="btn btn-danger mb-0" value="X" />
+                                    </a>
+                            </div>
+                            }
+                        }
+                    </div>
+                    <!-- Info -->
+                    <p class="small mb-2">@itemcomment.CommentDate</p>
+                    <div class="mt-2">
+                        <p class="mb-2">@itemcomment.CommentMsg</p>
+                        <div class="bg-white"></div>
+                        <div class="d-flex flex-row">
+                            @*<a class="accordion-collapse collapse show" href="#commmentreply-@itemcomment.ID" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-1">*@
+                            <a data-toggle="collapse" href="#commmentreply-@itemcomment.ID" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fa fa-reply me-2"></i>&nbsp;Reply
+                            </a>
+                        </div>
+
+                    </div>
+                    <div id="commmentreply-@itemcomment.ID" class="bg-light p-4 collapse">
+                        <div class="d-flex flex-row align-items-start">
+                            <textarea class="form-control" id="txtCommentMsg_@itemcomment.ID" placeholder="Viết nhận xét tại đây" rows="3"></textarea>
+
+                        </div>
+                        <div class="mt-2 text-right">
+                            <a class="subcomment" data-productid="@itemcomment.ProductID" data-userid="@ViewBag.UserID" data-parentid="@itemcomment.ID" data-commentmsg="txtCommentMsg_@itemcomment.ID">
+                                <input type="submit" class="btn btn-primary mb-0" value="Gửi bình luận" />
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Reply button -->
+
+                    @{Html.RenderAction("_ChildComment", "Product", new { parentid = itemcomment.ID, productid = itemcomment.ProductID });}
+                </div>
+                
+            </div>
+        </div>
+    }
+}
+        <div class="mt-2 text-right">
+            <a class="getallcomment" data-productid="@ViewBag.productId">
+                <input type="submit" class="btn btn-primary mb-0" value="Xem tất cả binh luận" />
+            </a>
+        </div>

@@ -1,0 +1,58 @@
+﻿@model Web.Models.FeedbackViewModel
+@using BotDetect.Web.Mvc;
+@{
+    ViewBag.Title = "Liên hệ";
+    ViewBag.MetaKeyword = "liên hệ";
+    ViewBag.MetaDescription = "Thông tin liên hệ của TuanPC";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
+
+<section class="contact_area section_gap_bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Gửi thông tin liên hệ</h3>
+                <div class="contact-form">
+                    @using (Html.BeginForm("SendFeedback", "Contact", FormMethod.Post))
+                    {
+                        if (ViewData["SuccessMsg"] != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                Cảm ơn bạn đã gửi phản hồi.
+                                <br />Chúng tôi sẽ liên hệ lại sớm nhất có thể.
+                            </div>
+                        }
+
+                        @Html.ValidationSummary(false, "", new { @class = "error" });
+                        <br />
+                        <h>Nhập tên</h>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control " });
+                        <h>Nhập email</h>
+                        <br />
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" });
+                        <h>Nhập nội dung</h>
+                        <br />
+                        @Html.TextAreaFor(model => model.Message, new { @class = "form-control" });
+
+
+                        MvcCaptcha contactCaptcha = new MvcCaptcha("contactCaptcha");
+                        <br />
+                        @Html.Captcha(contactCaptcha)
+                        <br />
+                        <h>Nhập captcha</h>
+                        <br />
+                        @Html.TextBox("CaptchaCode")
+                        <br />
+                        <br />
+                        <input type="submit" value="Gửi đi" class="btn btn-primary">
+                        <div class="clearfix"> </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>

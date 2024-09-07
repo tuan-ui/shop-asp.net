@@ -1,0 +1,113 @@
+﻿@model Web.Models.RegisterViewModel
+@using BotDetect.Web.Mvc;
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/LayoutLogin.cshtml";
+}
+
+<link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl" rel="stylesheet" type="text/css" />
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100 wrap-login-910px">
+            <span class="login90-form-title">
+                Đăng ký tài khoản
+            </span>
+            @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+                if (ViewData["SuccessMsg"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <strong>Chúc mừng bạn! </strong> đã đăng ký thành công.
+                        <br />Vui lòng click <strong><a href="/dang-nhap.html">vào đây </a></strong>để đăng nhập.
+                    </div>
+                }
+
+                <div class="login100-form validate-form register-form">
+                    <div class="form-half left">
+                        @Html.AntiForgeryToken()
+
+                        <div class="wrap-input100 validate-input" data-validate="Name is required">
+                            @Html.TextBoxFor(model => model.FullName, new { @class = "input100", placeholder = "Tên" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="wrap-input100 validate-input" data-validate="Email is required">
+                            @Html.TextBoxFor(model => model.Email, new { @class = "input100", placeholder = "Email" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="wrap-input100 validate-input" data-validate="Address is required">
+                            @Html.TextBoxFor(model => model.Address, new { @class = "input100", placeholder = "Địa chỉ" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-home" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="wrap-input100 validate-input" data-validate="Phone is required">
+                            @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "input100", placeholder = "Số điện thoại" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-phone" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-half right">
+                        <div class="wrap-input100 validate-input" data-validate="User is required">
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "input100", placeholder = "Tài khoản" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="wrap-input100 validate-input" data-validate="Password is required">
+                            @Html.PasswordFor(model => model.Password, new { @class = "input100", placeholder = "Mật khẩu" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-lock" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        <div class="mb-2 ml-5">
+                            @{
+                                MvcCaptcha registerCaptcha = new MvcCaptcha("registerCaptcha");
+                            }
+                            @Html.Captcha(registerCaptcha)
+                        </div>
+                           
+                        <div class="wrap-input100 validate-input" data-validate="Captcha Code is required">
+                            @Html.TextBox("CaptchaCode", "", new { @class = "input100", placeholder = "Mã Captcha" })
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-shield" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
+                        </div>
+
+                    <div class="container-login100-form-btn">
+                        <input type="submit" value="Đăng ký" class="login100-form-btn">
+                    </div>
+                </div>
+
+                <div class="text-center p-t-136">
+                    <a class="txt2" href="/dang-nhap.html">
+                        Đăng nhập tài khoản
+                        <i class="fa fa-long-arrow-left m-l-5" aria-hidden="true"></i>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,754 @@
+﻿﻿@model IEnumerable<Web.Models.ProductCategoryViewModel>
+@using System.Text.RegularExpressions
+@{
+    var suppliers = ViewBag.listsupplierViewModel;
+    var laptops = ViewBag.listproductLaptopViewModel;
+}
+<script src="~/Assets/client/js/vendor/jquery-2.2.4.min.js"></script>
+<script src="~/Assets/admin/libs/ion-rangeSlider/js/ion.rangeSlider.min.js"></script>
+<div class="sidebar-categories">
+    <div class="head" style="border-top-left-radius: 0.75rem;border-top-right-radius: 0.75rem;">
+        <div data-toggle="modal" data-target="#infoModal">
+            <i class="lnr lnr-magnifier"></i> Tìm kiếm nâng cao
+        </div>
+    </div>
+</div>
+<div class="sidebar-categories">
+    <div class="head" >
+        <div data-toggle="modal" data-target="#infoModalLaptop">
+            <i class="lnr lnr-magnifier"></i> Tìm kiếm laptop
+        </div>
+    </div>
+</div>
+<div class="sidebar-categories">
+    <div class="head">Danh mục sản phẩm</div>
+    <ul class="main-categories ">
+        @foreach (var category in Model.Where(x => x.ParentID == null))
+        {
+            var url = "/" + category.Alias + ".pc-" + category.ID + ".html";
+            //var childCategories = Model.Where(x => x.ParentID == category.ID);
+            <li class="main-nav-list">
+                @*@if (childCategories.Count() > 0)
+                    {
+                        <a data-toggle="collapse" href="#@category.Name" aria-expanded="false" aria-controls="@category.Name">
+                            <span class="lnr lnr-arrow-right"></span>@category.Name
+                        </a>
+                    }
+                    else
+                    {*@
+                <a href="@url">
+                    @category.Name
+                </a>
+                @*}
+                    @if (childCategories.Count() > 0)
+                    {
+                        <ul class="collapse" id="@category.Alias" data-toggle="collapse" aria-expanded="false" aria-controls="@category.Alias">
+                            @foreach (var childCategory in childCategories)
+                            {
+                                var childUrl = "/" + childCategory.Alias + ".pc-" + childCategory.ID + ".html";
+                                <li class="main-nav-list child">
+                                    <a href="@childUrl">@childCategory.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    }*@
+            </li>
+        }
+    </ul>
+</div>
+
+<form method="post" action="@Url.Action("FilterProducts", "Product")">
+    <div class="sidebar-categories" >
+        <div class="head" style="border-radius: 0.75rem">Danh sách nhà cung cấp</div>
+        <div class="row mt-2">
+            @{
+                int count = 0;
+                foreach (var supplier in suppliers)
+                {
+                    if (count % 2 == 0 && count != 0)
+                    {
+                    @:</div><div class="row">
+                    }
+                    <div class="col-xl-6 supplier-item">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="suppliers" value="@supplier.Name"> @supplier.Name
+                            </label>
+                        </div>
+                    </div>
+                    count++;
+                }
+            }
+        </div>
+    </div>
+    <div class="sidebar-categories">
+        <div class="head" style="border-radius: 0.75rem">Giá</div>
+        <input type="text" id="price_range" name="price_range" />
+        <input type="hidden" name="minPrice" />
+        <input type="hidden" name="maxPrice" />
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-warning mt-2 justify-content-center" id="filterButton">Filter</button>
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        $("#price_range").ionRangeSlider({
+            type: "double",
+            grid: true,
+            min: 0.00,
+            max: 100000000.00,
+            from: 20000.00,
+            to: 80000000.00,
+            step: 10000.00,
+            prefix: "$",
+            prettify: function (num) {
+                return num.toFixed(2);
+            }
+        });
+
+        $("#filterButton").on("click", function () {
+            var priceRange = $("#price_range").data("ionRangeSlider");
+            var minPrice = priceRange.result.from;
+            var maxPrice = priceRange.result.to;
+
+            $("input[name='minPrice']").val(minPrice);
+            $("input[name='maxPrice']").val(maxPrice);
+        });
+    });
+
+</script>
+<form method="post" action="@Url.Action("FilterComponent", "Product")">
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-search" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm nâng cao</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <h4>VGA AMD - Card màn hình</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 11))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("RX"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>VGA NVIDIA - Card màn hình</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 11))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("GTX") || searchs[i].Contains("RTX"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <h4>Bo mạch chủ Intel</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 8))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (Regex.IsMatch(searchs[i], @"B.60") || Regex.IsMatch(searchs[i], @"H.10") || Regex.IsMatch(searchs[i], @"Z.90") || searchs[i].Contains("X299X"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Bo mạch chủ AMD</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 8))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (Regex.IsMatch(searchs[i], @"A.20") || Regex.IsMatch(searchs[i], @"B.50") || Regex.IsMatch(searchs[i], @"X.70") || searchs[i].Contains("TRX40"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>CPU - Bộ vi xử lý Intel</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 7))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("intel"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>CPU - Bộ vi xử lý AMD</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 7))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("AMD"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Case - Theo hãng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 12))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("CASE"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Case - theo giá</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 12))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (!searchs[i].Contains("CASE"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <h4>Nguồn - theo hãng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 13))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("Nguồn"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Nguồn - Công suất</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 13))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (!searchs[i].Contains("Nguồn"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Ram - dung lượng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 17))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("GB"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Ram - Kiểu loại</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 17))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("DDR"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>Ram - theo hãng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 17))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (!searchs[i].Contains("GB") && !searchs[i].Contains("DDR"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>HDD - Dung lượng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 15))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("GB") || searchs[i].Contains("TB"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <h4>HDD - Theo hãng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 15))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (!searchs[i].Contains("GB") && !searchs[i].Contains("TB"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <h4>SSD - Dung lượng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 16))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (searchs[i].Contains("GB") || searchs[i].Contains("TB"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <h4>SSD - Theo hãng</h4>
+                                <div class="list-unstyled">
+                                    @foreach (var category in Model.Where(x => x.ID == 16))
+                                    {
+                                        string[] searchs = category.Searchs.Split(',');
+                                        for (var i = 0; i < searchs.Length; i++)
+                                        {
+                                            if (!searchs[i].Contains("GB") && !searchs[i].Contains("TB"))
+                                            {
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[i]"> @searchs[i]
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="sidebar-categories">
+                            <h4>Giá</h4>
+                            <input type="text" id="price_range_component" name="price_range_component" />
+                            <input type="hidden" name="minPrice" />
+                            <input type="hidden" name="maxPrice" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning " id="filterButtonComponent">Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        $("#price_range_component").ionRangeSlider({
+            type: "double",
+            grid: true,
+            min: 0.00,
+            max: 100000000.00,
+            from: 20000.00,
+            to: 80000000.00,
+            step: 10000.00,
+            prefix: "$",
+            prettify: function (num) {
+                return num.toFixed(2);
+            }
+        });
+
+        $("#filterButtonComponent").on("click", function () {
+            var priceRange = $("#price_range_component").data("ionRangeSlider");
+            var minPrice = priceRange.result.from;
+            var maxPrice = priceRange.result.to;
+
+            $("input[name='minPrice']").val(minPrice);
+            $("input[name='maxPrice']").val(maxPrice);
+        });
+    });
+
+</script>
+<form method="post" action="@Url.Action("FilterLaptops", "Product")">
+    <div class="modal fade" id="infoModalLaptop" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-search" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm laptop</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @{
+                        var brands = new HashSet<string>();
+                        var types = new HashSet<string>();
+                        var cpus = new HashSet<string>();
+                        var gpus = new HashSet<string>();
+                        var ssds = new HashSet<string>();
+                        var rams = new HashSet<string>();
+                        foreach (var laptop in laptops)
+                        {
+                            string[] searchs = laptop.Tags.Split(',');
+
+                            brands.Add(searchs[0]);
+                            types.Add(searchs[1]);
+                            cpus.Add(searchs[2]);
+                            gpus.Add(searchs[3]);
+                            ssds.Add(searchs[4]);
+                            rams.Add(searchs[5]);
+                        }
+                        var brandCount = brands.Count;
+                        var typeCount = types.Count;
+                        var cpuCount = cpus.Count;
+                        var gpuCount = gpus.Count;
+                        var ssdCount = ssds.Count;
+                        var ramCount = rams.Count;
+                    }
+                    <div class="container">
+                        <h4>Hãng sản xuất</h4>
+                        <div class="row">
+                            @foreach (var brand in brands)
+                            {
+                                <div class="col-sm-2">
+                                    <h5>@brand</h5>
+                                    @{ var addedModels = new HashSet<string>();}
+                                    <div class="list-unstyled">
+                                        @foreach (var laptop in laptops)
+                                        {
+                                            string[] searchs = laptop.Tags.Split(',');
+                                            if (searchs[0] == brand && !addedModels.Contains(searchs[1]))
+                                            {
+                                                addedModels.Add(searchs[1]);
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@searchs[1]"> @searchs[1]
+                                                    </label>
+                                                </div>
+                                            }
+
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <h4>Cpu - Intel</h4>
+                        <div class="row">
+                            @foreach (var cpu in cpus)
+                            {
+                                if (cpu.Contains("Intel"))
+                                {
+                                    <div class="col-sm-2">
+                                        @{ var addedModels = new HashSet<string>();
+                                            <div class="list-unstyled">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@cpu"> @cpu
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <h4>Cpu - Ryzen</h4>
+                        <div class="row">
+                            @foreach (var cpu in cpus)
+                            {
+                                if (cpu.Contains("Ryzen"))
+                                {
+                                    <div class="col-sm-2">
+                                        @{ var addedModels = new HashSet<string>();
+                                            <div class="list-unstyled">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@cpu"> @cpu
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <h4>Cpu - Apple</h4>
+                        <div class="row">
+                            @foreach (var cpu in cpus)
+                            {
+                                if (cpu.Contains("Apple"))
+                                {
+                                    <div class="col-sm-2">
+                                        @{ var addedModels = new HashSet<string>();
+                                            <div class="list-unstyled">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@cpu"> @cpu
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <h4>Gpu - Card đồ họa</h4>
+                        <div class="row">
+                            @foreach (var gpu in gpus)
+                            {
+                                if (!gpu.Contains("gpu"))
+                                {
+                                    <div class="col-sm-2">
+                                        @{ var addedModels = new HashSet<string>();
+                                            <div class="list-unstyled">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="tags" value="@gpu"> @gpu
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <h4>SSD - Dung lượng</h4>
+                        <div class="row">
+                            @foreach (var ssd in ssds)
+                            {
+                                <div class="col-sm-2">
+                                    @{ var addedModels = new HashSet<string>();
+                                        <div class="list-unstyled">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="tags" value="@ssd"> @ssd
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <h4>Ram - Dung lượng</h4>
+                        <div class="row">
+                            @foreach (var ram in rams)
+                            {
+                                <div class="col-sm-2">
+                                    @{ var addedModels = new HashSet<string>();
+                                        <div class="list-unstyled">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="tags" value="@ram"> @ram
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="sidebar-categories">
+                            <h4>Giá</h4>
+                            <input type="text" id="price_range_laptop" name="price_range_laptop" />
+                            <input type="hidden" name="minPrice" />
+                            <input type="hidden" name="maxPrice" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning " id="filterButtonLaptop">Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<style>
+    .modal-dialog-search {
+        max-width: 1500px;
+    }
+
+    a {
+        color: black;
+        text-decoration: none;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#price_range_laptop").ionRangeSlider({
+            type: "double",
+            grid: true,
+            min: 0.00,
+            max: 100000000.00,
+            from: 20000.00,
+            to: 80000000.00,
+            step: 10000.00,
+            prefix: "$",
+            prettify: function (num) {
+                return num.toFixed(2);
+            }
+        });
+
+        $("#filterButtonLaptop").on("click", function () {
+            var priceRange = $("#price_range_laptop").data("ionRangeSlider");
+            var minPrice = priceRange.result.from;
+            var maxPrice = priceRange.result.to;
+
+            $("input[name='minPrice']").val(minPrice);
+            $("input[name='maxPrice']").val(maxPrice);
+        });
+    });
+
+</script>
